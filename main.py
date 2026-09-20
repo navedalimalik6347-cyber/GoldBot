@@ -10,14 +10,13 @@ X_ACCESS_TOKEN = os.environ.get("X_ACCESS_TOKEN")
 X_ACCESS_SECRET = os.environ.get("X_ACCESS_SECRET")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-# Gemini configure karein (Updated model)
+# Gemini configure karein (Using gemini-pro)
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-pro")
+model = genai.GenerativeModel("gemini-pro")
 
 
 def get_market_data():
   try:
-    # Gold (GC=F) aur Bitcoin (BTC-USD) ka data fetch karna
     gold = yf.Ticker("GC=F")
     btc = yf.Ticker("BTC-USD")
 
