@@ -1,5 +1,4 @@
 import os
-import google.generativeai as genai
 import tweepy
 import yfinance as yf
 
@@ -8,14 +7,9 @@ X_API_KEY = os.environ.get("X_API_KEY")
 X_API_SECRET = os.environ.get("X_API_SECRET")
 X_ACCESS_TOKEN = os.environ.get("X_ACCESS_TOKEN")
 X_ACCESS_SECRET = os.environ.get("X_ACCESS_SECRET")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-
-# Gemini configure karein (Using gemini-pro)
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-pro")
 
 
-def get_market_data():
+def get_market_analysis():
   try:
     gold = yf.Ticker("GC=F")
     btc = yf.Ticker("BTC-USD")
@@ -24,30 +18,30 @@ def get_market_data():
     btc_data = btc.history(period="1d")
 
     gold_price = (
-        gold_data["Close"].iloc[-1] if not gold_data.empty else "2650.00"
+        f"{gold_data['Close'].iloc[-1]:.2f}"
+        if not gold_data.empty
+        else "2650.00"
     )
-    btc_price = btc_data["Close"].iloc[-1] if not btc_data.empty else "65000.00"
+    btc_price = (
+        f"{btc_data['Close'].iloc[-1]:.2f}"
+        if not btc_data.empty
+        else "65000.00"
+    )
 
-    return f"Gold Price: {gold_price}, BTC Price: {btc_price}"
+    tweet = (
+        f"⚡ Market Update ⚡\n\nGold (GC): ${gold_price}\nBitcoin (BTC):"
+        f" ${btc_price}\n\nKey Support & Resistance zones active. Manage your"
+        " risk carefully.\n\nJoin our Telegram for daily signals & VIP setup:"
+        " https://t.me/Gold_Hunter03\n\n#Gold #XAUUSD #BTC #Forex #Crypto"
+        " #Gold_Hunter03"
+    )
+    return tweet
   except Exception as e:
-    return "Gold Price: 2650.00, BTC Price: 65000.00"
-
-
-def generate_tweet():
-  market_info = get_market_data()
-
-  prompt = (
-      f"Current market data: {market_info}. Act as a professional Forex,"
-      " Crypto, and Stock Market analyst. Write a short, high-engagement"
-      " trading analysis tweet about Gold (XAUUSD) or Bitcoin (BTC), including"
-      " potential support and resistance zones, and market sentiment. Keep it"
-      " under 280 characters, add relevant hashtags like #Gold #Forex #BTC,"
-      " and absolutely end the tweet by promoting this Telegram channel:"
-      " https://t.me/Gold_Hunter03 (Username: @Gold_Hunter03)."
-  )
-
-  response = model.generate_content(prompt)
-  return response.text.strip()
+    return (
+        "⚡ Gold & BTC Market Update ⚡\nAnalyzing key support & resistance"
+        " zones for today's session.\n\nJoin our Telegram for exclusive setups:"
+        " https://t.me/Gold_Hunter03\n\n#Gold #XAUUSD #BTC #Forex #Crypto"
+    )
 
 
 def post_to_x():
@@ -60,7 +54,7 @@ def post_to_x():
         access_token_secret=X_ACCESS_SECRET,
     )
 
-    tweet_text = generate_tweet()
+    tweet_text = get_market_analysis()
     print(f"Generated Tweet:\n{tweet_text}")
 
     response = client.create_tweet(text=tweet_text)
