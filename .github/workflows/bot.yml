@@ -1,15 +1,15 @@
-name: Run Gold BTC Bot
+name: Daily Gold & BTC Bot
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Har roz subah 8 baje chalega
-  workflow_dispatch:
+    - cron: '0 8 * * *'  # Rozana subha 8:00 AM UTC par chalega (din ki sirf 1 post)
+  workflow_dispatch:      # Manual run button ke liye
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -17,16 +17,17 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          pip install tweepy google-generativeai yfinance
+          python -m pip install --upgrade pip
+          pip install yfinance tweepy google-genai
 
-      - name: Run bot
+      - name: Run Bot Script
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python main.py
